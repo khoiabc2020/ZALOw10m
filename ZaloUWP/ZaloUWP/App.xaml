@@ -1,0 +1,156 @@
+<Application
+    x:Class="ZaloUWP.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ZaloUWP">
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <Color x:Key="ZaloBlueColor">#0088FF</Color>
+            <Color x:Key="ZaloDarkBlueColor">#0066CC</Color>
+            <Color x:Key="ZaloLightBlueColor">#E8F2FF</Color>
+            <Color x:Key="ZaloIncomingBubbleColor">#F0F2F5</Color>
+
+            <SolidColorBrush x:Key="ZaloBlueBrush" Color="{StaticResource ZaloBlueColor}" />
+            <SolidColorBrush x:Key="ZaloDarkBlueBrush" Color="{StaticResource ZaloDarkBlueColor}" />
+            <SolidColorBrush x:Key="ZaloLightBlueBrush" Color="{StaticResource ZaloLightBlueColor}" />
+            <SolidColorBrush x:Key="ZaloIncomingBubbleBrush" Color="{StaticResource ZaloIncomingBubbleColor}" />
+
+            <!-- Global Focus Visual Overrides to prevent black rectangular outlines on Lumia 640 XL -->
+            <x:Boolean x:Key="UseSystemFocusVisuals">False</x:Boolean>
+            <SolidColorBrush x:Key="SystemControlFocusVisualPrimaryBrush" Color="Transparent" />
+            <SolidColorBrush x:Key="SystemControlFocusVisualSecondaryBrush" Color="Transparent" />
+            <SolidColorBrush x:Key="FocusVisualBlackStrokeThemeBrush" Color="Transparent" />
+            <SolidColorBrush x:Key="FocusVisualWhiteStrokeThemeBrush" Color="Transparent" />
+            <Thickness x:Key="SystemControlFocusVisualPrimaryThickness">0</Thickness>
+            <Thickness x:Key="SystemControlFocusVisualSecondaryThickness">0</Thickness>
+
+            <Style x:Key="FlatIconButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="UseSystemFocusVisuals" Value="False" />
+                <Setter Property="FocusVisualPrimaryThickness" Value="0" />
+                <Setter Property="FocusVisualSecondaryThickness" Value="0" />
+                <Setter Property="IsTabStop" Value="False" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Grid Background="{TemplateBinding Background}">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="PointerOver" />
+                                        <VisualState x:Name="Pressed" />
+                                        <VisualState x:Name="Disabled" />
+                                    </VisualStateGroup>
+                                    <VisualStateGroup x:Name="FocusStates">
+                                        <VisualState x:Name="Focused" />
+                                        <VisualState x:Name="Unfocused" />
+                                        <VisualState x:Name="PointerFocused" />
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <ContentPresenter Content="{TemplateBinding Content}"
+                                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                  Foreground="{TemplateBinding Foreground}"
+                                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  Margin="{TemplateBinding Padding}" />
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="ZaloAccentButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="{StaticResource ZaloBlueBrush}" />
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="FontSize" Value="15" />
+                <Setter Property="Padding" Value="16,8" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="UseSystemFocusVisuals" Value="False" />
+                <Setter Property="FocusVisualPrimaryThickness" Value="0" />
+                <Setter Property="FocusVisualSecondaryThickness" Value="0" />
+                <Setter Property="IsTabStop" Value="False" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="10">
+                                <ContentPresenter Content="{TemplateBinding Content}"
+                                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                  Foreground="{TemplateBinding Foreground}"
+                                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  Margin="{TemplateBinding Padding}" />
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="ZaloRoundedActionButtonStyle" TargetType="Button">
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="UseSystemFocusVisuals" Value="False" />
+                <Setter Property="FocusVisualPrimaryThickness" Value="0" />
+                <Setter Property="FocusVisualSecondaryThickness" Value="0" />
+                <Setter Property="IsTabStop" Value="False" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="10">
+                                <ContentPresenter Content="{TemplateBinding Content}"
+                                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                  Foreground="{TemplateBinding Foreground}"
+                                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  Margin="{TemplateBinding Padding}" />
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="ZaloHeaderTextBlockStyle" TargetType="TextBlock">
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="FontSize" Value="18" />
+                <Setter Property="Foreground" Value="White" />
+            </Style>
+
+            <Style x:Key="FlatButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Padding" Value="12,12" />
+                <Setter Property="UseSystemFocusVisuals" Value="False" />
+                <Setter Property="FocusVisualPrimaryThickness" Value="0" />
+                <Setter Property="FocusVisualSecondaryThickness" Value="0" />
+                <Setter Property="IsTabStop" Value="False" />
+                <Setter Property="HorizontalAlignment" Value="Stretch" />
+                <Setter Property="VerticalAlignment" Value="Stretch" />
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Grid Background="{TemplateBinding Background}">
+                                <ContentPresenter Content="{TemplateBinding Content}"
+                                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                  Foreground="{TemplateBinding Foreground}"
+                                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  Margin="{TemplateBinding Padding}" />
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </Application.Resources>
+
+</Application>
+

@@ -1,0 +1,39 @@
+# Visual Studio & MSBuild
+.vs/
+[Bb]in/
+[Oo]bj/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Executables & AppX build outputs (use GitHub Releases for distributing .appx)
+*.exe
+AppPackages/
+BundleArtifacts/
+temp_repack_*/
+*.appx
+*.appxbundle
+*.appxsym
+*.appxupload
+*.msix
+*.msixbundle
+
+# External references and scratch projects
+UnigramMobileUWP/
+android_reference/
+zca-js/
+
+# Assistant handoff and scratch docs
+ANTIGRAVITY_BUILD_HANDOFF.md
+HANDOFF_TO_CODEX.md
+UI_REVIEW.md
+ZALO_ANDROID_PARITY_ARCHITECTURE.md
+*Face10*
+
+# OS files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.log

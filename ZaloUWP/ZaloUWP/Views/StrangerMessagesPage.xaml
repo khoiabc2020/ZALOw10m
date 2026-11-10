@@ -1,0 +1,89 @@
+<Page
+    x:Class="ZaloUWP.Views.StrangerMessagesPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    RequestedTheme="Light">
+    <Grid Background="#FFFFFF">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="56" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Background="{StaticResource ZaloBlueBrush}" Padding="8,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="42" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button Click="BackButton_Click" Style="{StaticResource FlatIconButtonStyle}" Foreground="White" Width="42" Height="42">
+                <TextBlock Text="&#xE72B;" FontFamily="Segoe MDL2 Assets" FontSize="20"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Button>
+            <TextBlock Grid.Column="1" Text="Tin nhắn từ người lạ" Foreground="White" FontSize="17"
+                       FontWeight="SemiBold" VerticalAlignment="Center" Margin="8,0,0,0" />
+        </Grid>
+
+        <Border Grid.Row="1" Background="#F5F6F7" Padding="18,12">
+            <TextBlock Text="Người chưa có trong danh bạ có thể nhắn tin cho bạn. Hãy kiểm tra kỹ trước khi chia sẻ thông tin cá nhân."
+                       FontSize="14" Foreground="#70777F" TextWrapping="Wrap" />
+        </Border>
+
+        <Grid Grid.Row="2">
+            <ListView x:Name="StrangerList" Background="White" IsItemClickEnabled="True"
+                      SelectionMode="None" ItemClick="StrangerList_ItemClick">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="Margin" Value="0" />
+                        <Setter Property="MinHeight" Value="0" />
+                        <Setter Property="IsTabStop" Value="False" />
+                        <Setter Property="UseSystemFocusVisuals" Value="False" />
+                        <Setter Property="FocusVisualPrimaryThickness" Value="0" />
+                        <Setter Property="FocusVisualSecondaryThickness" Value="0" />
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Height="86" Padding="18,0" Background="White">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="58" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid Width="50" Height="50" VerticalAlignment="Center">
+                                <Ellipse Fill="{Binding AvatarColor}" />
+                                <TextBlock Text="{Binding Initial}" Foreground="White" FontSize="18"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                <Ellipse Fill="{Binding AvatarImageBrush}" />
+                            </Grid>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="10,0,6,0">
+                                <TextBlock Text="{Binding Name}" FontSize="16" Foreground="#202124"
+                                           TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="{Binding LastText}" FontSize="14" Foreground="#858A90"
+                                           TextTrimming="CharacterEllipsis" MaxLines="1" Margin="0,4,0,0" />
+                            </StackPanel>
+                            <TextBlock Grid.Column="2" Text="{Binding TimeText}" FontSize="12" Foreground="#858A90"
+                                       VerticalAlignment="Top" Margin="8,17,0,0" />
+                            <Border Grid.ColumnSpan="3" BorderBrush="#E8E8E8" BorderThickness="0,0,0,1"
+                                    Margin="68,0,0,0" VerticalAlignment="Bottom" />
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <StackPanel x:Name="EmptyStrangerPanel" Visibility="Collapsed" VerticalAlignment="Center"
+                        HorizontalAlignment="Center" Padding="28" MaxWidth="330">
+                <Border Width="58" Height="58" CornerRadius="29" Background="#EEF6FF"
+                        HorizontalAlignment="Center" Margin="0,0,0,14">
+                    <TextBlock Text="&#xE77B;" FontFamily="Segoe MDL2 Assets" FontSize="27" Foreground="#1688F8"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+                <TextBlock Text="Chưa có tin nhắn từ người lạ" FontSize="16" FontWeight="SemiBold"
+                           Foreground="#202124" HorizontalAlignment="Center" TextAlignment="Center" />
+                <TextBlock Text="Tin nhắn mới từ người chưa có trong danh bạ sẽ xuất hiện tại đây."
+                           FontSize="13" Foreground="#858A90" TextWrapping="Wrap" TextAlignment="Center"
+                           HorizontalAlignment="Center" Margin="0,6,0,0" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Page>

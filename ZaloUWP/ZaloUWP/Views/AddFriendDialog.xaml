@@ -1,0 +1,54 @@
+<ContentDialog
+    x:Class="ZaloUWP.Views.AddFriendDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ZaloUWP.Views"
+    Title="Thêm bạn mới"
+    RequestedTheme="Light"
+    Background="#FFFFFF"
+    Foreground="#17212B"
+    PrimaryButtonText="Kết bạn"
+    SecondaryButtonText="Đóng"
+    PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
+    SecondaryButtonClick="ContentDialog_SecondaryButtonClick">
+
+    <StackPanel Margin="0,8,0,0">
+        <TextBlock Text="Nhập số điện thoại cần tìm" FontSize="13.5" Foreground="#5F6B78" />
+        <Grid Margin="0,10,0,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="PhoneTextBox" Grid.Column="0" PlaceholderText="Ví dụ: 0987654321" InputScope="TelephoneNumber"
+                     RequestedTheme="Light" Background="#FFFFFF" Foreground="#17212B" BorderBrush="#D7DEE8"
+                     BorderThickness="1" Padding="10,0" Height="44" FontSize="15" VerticalContentAlignment="Center" />
+            <Button x:Name="SearchButton" Click="SearchButton_Click" Grid.Column="1" Style="{StaticResource ZaloRoundedActionButtonStyle}" Background="{StaticResource ZaloBlueBrush}" Foreground="White"
+                    Margin="8,0,0,0" Padding="16,0" Height="44" MinWidth="58" UseSystemFocusVisuals="False">
+                <TextBlock Text="Tìm" />
+            </Button>
+        </Grid>
+
+        <!-- Search Result Card -->
+        <Border x:Name="ResultCard" Visibility="Collapsed" Background="#F7F9FC" BorderBrush="#E8EDF3"
+                BorderThickness="1" CornerRadius="10" Padding="12" Margin="0,0,0,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Ellipse Grid.Column="0" Width="44" Height="44" Margin="0,0,12,0">
+                    <Ellipse.Fill>
+                        <ImageBrush x:Name="FoundAvatarBrush" Stretch="UniformToFill" />
+                    </Ellipse.Fill>
+                </Ellipse>
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock x:Name="FoundNameTextBlock" Text="Tên người dùng" FontSize="15" FontWeight="SemiBold" Foreground="#17212B" />
+                    <TextBlock x:Name="FoundPhoneTextBlock" Text="0987654321" FontSize="12.5" Foreground="#778392" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <TextBlock x:Name="StatusTextBlock" Text="" FontSize="12.5" Foreground="#64748B" TextWrapping="Wrap" />
+    </StackPanel>
+</ContentDialog>
+
