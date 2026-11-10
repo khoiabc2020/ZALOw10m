@@ -17,6 +17,23 @@ SIGNTOOL_PATH = r"C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64\si
 CERT_PATH = os.path.join(ROOT_DIR, "ZaloDev.pfx")
 CERT_PASS = "123456"
 
+def bump_version():
+    if not os.path.exists(MANIFEST_PATH):
+        return "1.0.1.0"
+    with open(MANIFEST_PATH, "r", encoding="utf-8") as f:
+        content = f.read()
+    match = re.search(r'Version="(\d+)\.(\d+)\.(\d+)\.(\d+)"', content)
+    if match:
+        major, minor, build_num, rev = match.groups()
+        new_build = int(build_num) + 1
+        new_version = f"{major}.{minor}.{new_build}.{rev}"
+        new_content = re.sub(r'Version="\d+\.\d+\.\d+\.\d+"', f'Version="{new_version}"', content)
+        with open(MANIFEST_PATH, "w", encoding="utf-8") as f:
+            f.write(new_content)
+        print(f"[VERSION] Auto-bumped version: {match.group(0)} -> Version=\"{new_version}\"")
+        return new_version
+    return "1.0.1.0"
+
 def get_app_version():
     if not os.path.exists(MANIFEST_PATH):
         return "1.0.0.0"
@@ -27,8 +44,8 @@ def get_app_version():
         return match.group(1)
     return "1.0.0.0"
 
-def build():
-    version = get_app_version()
+def build(auto_bump=True):
+    version = bump_version() if auto_bump else get_app_version()
     print(f"=== 1. Building ZaloWP81 v{version} (ARM Release) ===")
     cmd = [
         MSBUILD_PATH,
@@ -119,7 +136,10 @@ def pack_and_sign(version):
 
     inner_appx = os.path.join(PROJECT_DIR, f"ZaloWP81_{version}_ARM.appx")
     shutil.copyfile(out_appx, inner_appx)
-    print(f"[SUCCESS] Created package: {out_appx} and {inner_appx}")
+    latest_appx = os.path.join(ROOT_DIR, "ZaloWP81_ARM.appx")
+    shutil.copyfile(out_appx, latest_appx)
+    print(f"[SUCCESS] Created package: {out_appx}")
+    print(f"          Also updated: {inner_appx} and {latest_appx}")
     return out_appx
 
 if __name__ == "__main__":
