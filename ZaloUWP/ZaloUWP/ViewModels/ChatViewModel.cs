@@ -47,8 +47,6 @@ namespace ZaloUWP.ViewModels
             set => SetProperty(ref _statusSubtitle, value);
         }
 
-        private Timer _typingTimer;
-
         public ICommand SendMessageCommand { get; }
         public ICommand RefreshMessagesCommand { get; }
 
@@ -182,7 +180,6 @@ namespace ZaloUWP.ViewModels
 
         public void Cleanup()
         {
-            _typingTimer?.Dispose();
         }
 
         private void WsClient_MessageReceived(object sender, MessageItem msg)

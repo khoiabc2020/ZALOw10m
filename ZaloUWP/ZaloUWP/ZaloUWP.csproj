@@ -103,7 +103,15 @@
     <Compile Include="Core\ZaloApiClient.cs" />
     <Compile Include="Core\ZaloWebSocketClient.cs" />
     <Compile Include="Core\ZaloCore.cs" />
+    <Compile Include="Core\ZaloJson.cs" />
+    <Compile Include="Core\ZaloGcm.cs" />
+    <Compile Include="Core\ZaloListener.cs" />
     <Compile Include="Core\ZaloMessaging.cs" />
+    <Compile Include="Core\ZaloFormat.cs" />
+    <Compile Include="Core\ZaloEmoticonMap.cs" />
+    <Compile Include="Core\ZaloAvatar.cs" />
+    <Compile Include="Core\ZaloConversation.cs" />
+    <Compile Include="Core\ZaloApp.cs" />
     <Compile Include="Core\ZaloPhoneSync.cs" />
     <Compile Include="Database\ZaloDatabase.cs" />
     <Compile Include="Models\ZaloModels.cs" />

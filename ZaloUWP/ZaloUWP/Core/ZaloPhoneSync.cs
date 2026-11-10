@@ -73,7 +73,9 @@ namespace ZaloLite
     /// </summary>
     public static class ZaloPhoneSync
     {
+#pragma warning disable CS0649
         private static CryptographicKey _rsaKeyPair;
+#pragma warning restore CS0649
         private static CoreDispatcher _dispatcher;
         private static bool _isSyncing;
         private static string _statusMessage = "Đồng bộ từ điện thoại chưa khả dụng: giao thức hiện tại cần được cập nhật.";

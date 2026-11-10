@@ -80,6 +80,15 @@ Tải về các tệp từ mục [**Releases**](https://github.com/khoiabc2020/Z
 
 ---
 
+## 📌 Phiên bản mới nhất: v1.3.23.0
+- **Tối ưu hóa dung lượng**: Giảm dung lượng gói `.appx` xuống còn **~11.4 MB** (tiết kiệm hơn 1.3 MB dung lượng lưu trữ), loại bỏ tài nguyên dư thừa và nén lossless hình ảnh.
+- **Refactor kiến trúc**: Phân tách lớp nguyên khối `ZaloMessaging.cs` thành 9 mô-đun chuyên biệt (`ZaloApp`, `ZaloConversation`, `ZaloListener`, `ZaloFormat`, `ZaloAvatar`, `ZaloEmoticonMap`, `ZaloGcm`, `ZaloJson`, `ZaloMessaging`).
+- **Tối ưu bộ nhớ (1GB RAM)**: Giới hạn kích thước decode ảnh đại diện (`DecodePixelWidth = 96`), quản lý bộ nhớ đệm tin nhắn thông minh và unhook event sạch sẽ khi chuyển trang.
+- **Sửa lỗi giao diện**: Triệt tiêu hoàn toàn khung viền đen (focus visuals) khi chạm vào biểu tượng và thanh điều hướng trên Windows 10 Mobile.
+
+---
+
 ## 📜 Giấy phép & Tuyên bố miễn trừ trách nhiệm
 - Dự án này được phát triển độc lập cho mục đích học tập, nghiên cứu và phục hồi trải nghiệm sử dụng trên các thiết bị Windows 10 Mobile cổ điển.
 - Tất cả các nhãn hiệu, logo và tài nguyên liên quan đến Zalo thuộc sở hữu của VNG Corporation.
+
