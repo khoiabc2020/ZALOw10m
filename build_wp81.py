@@ -12,6 +12,7 @@ MANIFEST_PATH = os.path.join(PROJECT_DIR, "Package.appxmanifest")
 ASSETS_PATH = os.path.join(PROJECT_DIR, "Assets")
 MSBUILD_PATH = r"D:\VS\MSBuild\Current\Bin\MSBuild.exe"
 MAKEAPPX_PATH = r"C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64\makeappx.exe"
+MAKEPRI_81_PATH = r"C:\Program Files (x86)\Windows Kits\8.1\bin\x64\makepri.exe"
 SIGNTOOL_PATH = r"C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64\signtool.exe"
 CERT_PATH = os.path.join(ROOT_DIR, "ZaloDev.pfx")
 CERT_PASS = "123456"
@@ -61,7 +62,30 @@ def pack_and_sign(version):
     print(f"Copying Assets -> {assets_dest}...")
     shutil.copytree(ASSETS_PATH, assets_dest)
 
-    # 2.3 Clean up unwanted PDBs/Views if needed
+    # 2.3 Generate resources.pri using makepri.exe
+    priconfig_path = os.path.join(PROJECT_DIR, "priconfig.xml")
+    if not os.path.exists(priconfig_path):
+        res_cfg = subprocess.run([
+            MAKEPRI_81_PATH, "createconfig", "/cf", priconfig_path, "/dq", "vi-VN", "/o"
+        ], capture_output=True, text=True)
+        print("Create PRI config:", res_cfg.stdout)
+
+    pri_dest = os.path.join(out_dir, "resources.pri")
+    print(f"Generating {pri_dest}...")
+    res_pri = subprocess.run([
+        MAKEPRI_81_PATH, "new",
+        "/pr", PROJECT_DIR,
+        "/cf", priconfig_path,
+        "/mn", MANIFEST_PATH,
+        "/of", pri_dest,
+        "/o"
+    ], capture_output=True, text=True)
+    if res_pri.returncode != 0:
+        print("[ERROR] makepri failed:\n", res_pri.stdout, res_pri.stderr)
+        sys.exit(1)
+    print("[OK] resources.pri generated successfully.")
+
+    # 2.4 Clean up unwanted Views directory if present
     views_dir = os.path.join(out_dir, "Views")
     if os.path.exists(views_dir):
         shutil.rmtree(views_dir)
@@ -84,12 +108,6 @@ def pack_and_sign(version):
             print("[WARN] Signing failed:", res_sign.stderr)
         else:
             print("[OK] Signed successfully.")
-
-    # 2.4 Verify signature
-    res_verify = subprocess.run([
-        SIGNTOOL_PATH, "verify", "/pa", "/v", out_appx
-    ], capture_output=True, text=True)
-    print("Verification result:\n", res_verify.stdout)
 
     print(f"[SUCCESS] Created package: {out_appx}")
     return out_appx
