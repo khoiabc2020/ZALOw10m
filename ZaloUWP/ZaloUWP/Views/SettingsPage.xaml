@@ -98,6 +98,30 @@
                 </StackPanel>
                 </Border>
 
+                <!-- UI Scale Section -->
+                <Border Background="White" CornerRadius="12" Padding="14,12" Margin="0,0,0,12">
+                <StackPanel>
+                    <TextBlock Text="THU PHÓNG GIAO DIỆN (UI SCALE)" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource ZaloBlueBrush}" Margin="0,0,0,8" />
+                    <TextBlock Text="Tỷ lệ kích thước toàn bộ ứng dụng:" FontSize="13.5" FontWeight="SemiBold" Foreground="#1E293B" />
+                    <TextBlock Text="Tùy chỉnh tỷ lệ (100%, 125%, 150%, 175%) phù hợp với màn hình lớn như Lumia 640 XL. Hiển thị phóng to rõ nét mượt mà 60 FPS, không méo hay giật lag." FontSize="11.5" Foreground="#64748B" Margin="0,2,0,8" TextWrapping="Wrap" />
+
+                    <!-- UI Scale Selector Pills -->
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="Scale100Btn" Grid.Column="0" Content="100%" Click="UiScalePill_Click" Tag="1.0" Margin="0,0,3,0" HorizontalAlignment="Stretch" Style="{StaticResource ZaloRoundedActionButtonStyle}" />
+                        <Button x:Name="Scale125Btn" Grid.Column="1" Content="125%" Click="UiScalePill_Click" Tag="1.25" Margin="3,0,3,0" HorizontalAlignment="Stretch" Style="{StaticResource ZaloRoundedActionButtonStyle}" />
+                        <Button x:Name="Scale150Btn" Grid.Column="2" Content="150%" Click="UiScalePill_Click" Tag="1.5" Margin="3,0,3,0" HorizontalAlignment="Stretch" Style="{StaticResource ZaloRoundedActionButtonStyle}" />
+                        <Button x:Name="Scale175Btn" Grid.Column="3" Content="175%" Click="UiScalePill_Click" Tag="1.75" Margin="3,0,0,0" HorizontalAlignment="Stretch" Style="{StaticResource ZaloRoundedActionButtonStyle}" />
+                    </Grid>
+                    <TextBlock x:Name="ScaleStatusText" Text="" FontSize="11.5" Foreground="{StaticResource ZaloBlueBrush}" Margin="2,2,0,0" TextWrapping="Wrap" />
+                </StackPanel>
+                </Border>
+
                 <!-- Chat Font Size Section -->
                 <Border Background="White" CornerRadius="12" Padding="14,12" Margin="0,0,0,12">
                 <StackPanel>

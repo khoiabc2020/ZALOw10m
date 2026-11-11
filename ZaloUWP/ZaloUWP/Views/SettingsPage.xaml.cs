@@ -143,7 +143,36 @@ namespace ZaloUWP.Views
                 ThemeComboBox.SelectedIndex = 0;
             ApplyTheme(ElementTheme.Light);
 
+            UpdateUiScalePills();
             UpdateFontSizePills(_settings.MessageFontSize);
+        }
+
+        private void UpdateUiScalePills()
+        {
+            var activeBg = (Windows.UI.Xaml.Media.Brush)Application.Current.Resources["ZaloBlueBrush"];
+            var inactiveBg = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(0xFF, 0xF1, 0xF5, 0xF9));
+            var activeFg = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.White);
+            var inactiveFg = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(0xFF, 0x1E, 0x29, 0x3B));
+
+            double currentScale = _settings.UiScaleFactor;
+            SetPillStyle(Scale100Btn, Math.Abs(currentScale - 1.0) < 0.05, activeBg, inactiveBg, activeFg, inactiveFg);
+            SetPillStyle(Scale125Btn, Math.Abs(currentScale - 1.25) < 0.05, activeBg, inactiveBg, activeFg, inactiveFg);
+            SetPillStyle(Scale150Btn, Math.Abs(currentScale - 1.50) < 0.05, activeBg, inactiveBg, activeFg, inactiveFg);
+            SetPillStyle(Scale175Btn, Math.Abs(currentScale - 1.75) < 0.05, activeBg, inactiveBg, activeFg, inactiveFg);
+
+            if (ScaleStatusText != null)
+            {
+                ScaleStatusText.Text = $"Đang chọn: {(int)(currentScale * 100)}% · Đã lưu! Các trang tiếp theo sẽ áp dụng kích thước này.";
+            }
+        }
+
+        private void UiScalePill_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.Tag is string tagStr && double.TryParse(tagStr, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double factor))
+            {
+                _settings.UiScaleFactor = factor;
+                UpdateUiScalePills();
+            }
         }
 
         private void UpdateFontSizePills(double selectedSize)

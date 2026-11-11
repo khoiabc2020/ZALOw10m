@@ -55,12 +55,29 @@ namespace ZaloUWP.Services
 
         public double UiScaleFactor
         {
-            get => 1.0;
+            get
+            {
+                if (_settings.ContainsKey("UiScaleFactor"))
+                {
+                    try { return Convert.ToDouble(_settings["UiScaleFactor"]); }
+                    catch { }
+                }
+                return 1.0;
+            }
             set
             {
-                try { _settings.Remove("UiScaleFactor"); } catch { }
-                ResetUiScale();
+                _settings["UiScaleFactor"] = value;
             }
+        }
+
+        public static double Scale(double baseVal)
+        {
+            return Math.Round(baseVal * Current.UiScaleFactor);
+        }
+
+        public static double ScaleFont(double baseFontSize)
+        {
+            return Math.Round(baseFontSize * Current.UiScaleFactor, 1);
         }
 
         public static void ResetUiScale()
