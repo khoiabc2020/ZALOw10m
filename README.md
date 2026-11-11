@@ -1,6 +1,6 @@
-# ZALOw10m — Zalo UWP Client cho Windows 10 Mobile 📱
+# ZALOw10m — Zalo Unified Client cho Windows Phone 8.1 & Windows 10 Mobile 📱
 
-Ứng dụng Zalo Native Client được phát triển và tối ưu hóa chuyên biệt cho các thiết bị chạy **Windows 10 Mobile** (ARM32), đặc biệt là dòng Microsoft Lumia (Lumia 640 XL, Lumia 950/950 XL, Lumia 730, 830, 930...).
+Ứng dụng Zalo Native Client được phát triển và tối ưu hóa chuyên biệt thống nhất thành **1 bản duy nhất (`ZaloWP81`)** chạy mượt mà trên cả **Windows Phone 8.1** và **Windows 10 Mobile** (ARM32), đặc biệt là các dòng máy Nokia / Microsoft Lumia (Lumia 640 XL, 950/950 XL, 730, 830, 930, 520, 630...).
 
 Ứng dụng kết nối trực tiếp đến hệ thống Zalo thông qua giao thức WebSocket và REST API, mang lại trải nghiệm mượt mà ngay cả trên các thiết bị Lumia cấu hình 1GB RAM (chip Snapdragon 400).
 
@@ -8,23 +8,27 @@
 
 ## ✨ Tính năng nổi bật
 
-- 🔐 **Đăng nhập an toàn bằng mã QR**: Quét mã QR trực tiếp từ app Zalo trên điện thoại chính.
+- ⚡ **Bản duy nhất thống nhất (Unified Codebase)**:
+  - Dự án gốc `ZaloWP81` chạy tương thích 100% trên cả Windows Phone 8.1 và Windows 10 Mobile.
+  - Sử dụng giao diện thuần C# XAML tree siêu tốc, mở tức thì, không giật lag.
+  - Chống văng ứng dụng triệt để: thay thế hoàn toàn `MessageDialog` bằng `ZaloActionSheet` hiện đại (không bị giới hạn 2 lệnh của WP8.1).
 - 💬 **Trò chuyện thời gian thực (Real-time Messaging)**:
   - Nhận và gửi tin nhắn tức thời qua kết nối WebSocket bảo mật.
   - Hiển thị trạng thái tin nhắn (Đang gửi, Đã gửi, Đã nhận, Đã xem).
-  - Trò chuyện 1-1 và trò chuyện nhóm.
+  - Trò chuyện 1-1 và trò chuyện nhóm đầy đủ avatar từng thành viên, cảnh báo nhóm hạn chế chat.
+  - Header chat ghim cố định ở đỉnh màn hình kể cả khi mở bàn phím ảo.
   - Phân loại hộp thư: Tab **Ưu tiên** và Tab **Khác**.
-- 🎨 **Đa phương tiện & Đồ họa phong phú**:
-  - Gửi và xem hình ảnh với trình xem ảnh phóng to/thu nhỏ (pinch-to-zoom).
+- 🎨 **Giao diện & Tiện ích hiện đại**:
+  - Tùy chỉnh tỉ lệ hiển thị giao diện (100%, 125%, 150%, 175%) trong Cài đặt.
+  - Công tắc chuyển đổi hiện đại `ZaloModernSwitch` mượt mà, bỏ khung viền đen cổ điển.
+  - Trang **Nhóm chung** (`MutualGroupsPage`) riêng biệt, đồng bộ phong cách hệ thống.
+  - Trình xem ảnh phóng to/thu nhỏ (pinch-to-zoom).
   - Hệ thống **Zalo Emoticon chính thức**, Emoji hệ thống, ảnh GIF động và **Nhãn dán (Stickers)** đầy đủ.
   - Hiển thị danh thiếp (Contact Card), vị trí, thông báo nhóm.
-- 👥 **Danh bạ & Nhóm**:
+- 👥 **Danh bạ & Quản trị nhóm**:
   - Đồng bộ danh sách bạn bè, hiển thị trạng thái và ảnh đại diện.
   - Tìm kiếm bạn bè qua số điện thoại và gửi lời mời kết bạn.
-  - Quản lý danh sách nhóm, tạo nhóm mới, xem thông tin thành viên.
-- ⚡ **Tối ưu hóa phần cứng di động**:
-  - Tối ưu bộ nhớ đệm cho thiết bị RAM 1GB, chống tràn RAM và giảm nhiệt độ máy.
-  - Giao diện chuẩn phong cách Zalo hiện đại, triệt tiêu hoàn toàn khung viền đen khi chạm nút trên Windows 10 Mobile.
+  - Quản lý danh sách nhóm, tạo nhóm mới, xem thông tin thành viên, chuyển quyền trưởng nhóm.
 
 ---
 
@@ -32,12 +36,13 @@
 
 ### 1. Chuẩn bị
 Tải về các tệp từ mục [**Releases**](https://github.com/khoiabc2020/ZALOw10m/releases):
-- Gói ứng dụng: `ZaloUWP_x.x.xx.x_ARM.appx` (phiên bản mới nhất).
-- Chứng chỉ số: `ZaloDev.cer`.
-- *(Tùy chọn)*: `Microsoft.NET.CoreRuntime.1.1.appx` (nếu máy chưa có runtime .NET Core).
+- Gói ứng dụng: `ZaloWP81_1.0.43.0_ARM.appx` (hoặc `ZaloWP81_ARM.appx`).
+- Chứng chỉ số: `ZaloDev.cer` (cài vào Local Machine ➔ Trusted People / Trusted Root).
 
 ### 2. Bật chế độ Nhà phát triển trên Lumia
 1. Vào **Cài đặt** (Settings) ➔ **Cập nhật & bảo mật** (Update & security) ➔ **Dành cho nhà phát triển** (For developers).
+2. Chọn **Chế độ nhà phát triển** (Developer mode).
+3. Bật **Cổng thiết bị Windows** (Windows Device Portal) và kết nối qua trình duyệt máy tính để tải file `.appx` lên cài đặt trực tiếp.
 2. Chọn **Chế độ nhà phát triển** (Developer mode).
 3. Bật **Cổng thiết bị** (Device Portal) và ghi lại địa chỉ IP (ví dụ: `http://192.168.1.x`).
 
