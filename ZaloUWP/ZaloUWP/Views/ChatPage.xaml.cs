@@ -2113,26 +2113,28 @@ namespace ZaloUWP.Views
         private async void PhotoButton_Click(object sender, RoutedEventArgs e)
         {
             if (_conversation == null) return;
-            var picker = new FileOpenPicker
-            {
-                ViewMode = PickerViewMode.Thumbnail,
-                SuggestedStartLocation = PickerLocationId.PicturesLibrary
-            };
-            picker.FileTypeFilter.Add(".jpg");
-            picker.FileTypeFilter.Add(".jpeg");
-            picker.FileTypeFilter.Add(".png");
-            picker.FileTypeFilter.Add(".webp");
-            picker.FileTypeFilter.Add(".mp4");
-            picker.FileTypeFilter.Add(".gif");
-
-            StorageFile file = await picker.PickSingleFileAsync();
-            if (file == null) return;
-
-            PhotoButton.IsEnabled = false;
-            string caption = MessageInputBox.Text.Trim();
-            bool isVideo = string.Equals(System.IO.Path.GetExtension(file.Name), ".mp4", StringComparison.OrdinalIgnoreCase);
+            bool isVideo = false;
             try
             {
+                var picker = new FileOpenPicker
+                {
+                    ViewMode = PickerViewMode.Thumbnail,
+                    SuggestedStartLocation = PickerLocationId.PicturesLibrary
+                };
+                picker.FileTypeFilter.Add(".jpg");
+                picker.FileTypeFilter.Add(".jpeg");
+                picker.FileTypeFilter.Add(".png");
+                picker.FileTypeFilter.Add(".webp");
+                picker.FileTypeFilter.Add(".mp4");
+                picker.FileTypeFilter.Add(".gif");
+
+                StorageFile file = await picker.PickSingleFileAsync();
+                if (file == null) return;
+
+                PhotoButton.IsEnabled = false;
+                string caption = MessageInputBox.Text.Trim();
+                isVideo = string.Equals(System.IO.Path.GetExtension(file.Name), ".mp4", StringComparison.OrdinalIgnoreCase);
+
                 var properties = await file.GetBasicPropertiesAsync();
                 if (properties.Size > 20UL * 1024UL * 1024UL)
                     throw new InvalidOperationException((isVideo ? "Video" : "Ảnh") + " vượt giới hạn 20 MB.");
@@ -2147,10 +2149,20 @@ namespace ZaloUWP.Views
 
                 using (IRandomAccessStream imageStream = await file.OpenReadAsync())
                 {
-                    BitmapDecoder decoder = await BitmapDecoder.CreateAsync(imageStream);
-                    uint width = decoder.PixelWidth;
-                    uint height = decoder.PixelHeight;
-                    imageStream.Seek(0);
+                    uint width = 800;
+                    uint height = 600;
+                    try
+                    {
+                        BitmapDecoder decoder = await BitmapDecoder.CreateAsync(imageStream);
+                        width = decoder.PixelWidth;
+                        height = decoder.PixelHeight;
+                        imageStream.Seek(0);
+                    }
+                    catch
+                    {
+                        try { imageStream.Seek(0); } catch { }
+                    }
+
                     await ZaloApp.SendImageAsync(_conversation, file.Name, imageStream, (long)properties.Size,
                         width, height, caption);
                 }
@@ -2161,7 +2173,7 @@ namespace ZaloUWP.Views
             {
                 ZaloLog.Add((isVideo ? "Video" : "Image") + " send error: " + ex.Message);
                 await new Windows.UI.Popups.MessageDialog("Không gửi được " + (isVideo ? "video" : "ảnh")
-                    + ". " + ex.Message, "Lỗi gửi " + (isVideo ? "video" : "ảnh")).ShowAsync();
+                    + ". " + ex.Message + "\nVui lòng kiểm tra quyền thư viện ảnh trong Cài đặt của điện thoại.", "Lỗi gửi " + (isVideo ? "video" : "ảnh")).ShowAsync();
             }
             finally
             {
