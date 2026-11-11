@@ -142,6 +142,64 @@ namespace ZaloUWP.Views
             if (ThemeComboBox != null)
                 ThemeComboBox.SelectedIndex = 0;
             ApplyTheme(ElementTheme.Light);
+
+            UpdateFontSizePills(_settings.MessageFontSize);
+            UpdateScalePills(_settings.UiScaleFactor);
+        }
+
+        private void UpdateFontSizePills(double selectedSize)
+        {
+            var activeBg = (Windows.UI.Xaml.Media.Brush)Application.Current.Resources["ZaloBlueBrush"];
+            var inactiveBg = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(0xFF, 0xF1, 0xF5, 0xF9));
+            var activeFg = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.White);
+            var inactiveFg = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(0xFF, 0x1E, 0x29, 0x3B));
+
+            SetPillStyle(FontSmallBtn, Math.Abs(selectedSize - 13.5) < 0.5, activeBg, inactiveBg, activeFg, inactiveFg);
+            SetPillStyle(FontMediumBtn, Math.Abs(selectedSize - 15.5) < 0.5, activeBg, inactiveBg, activeFg, inactiveFg);
+            SetPillStyle(FontLargeBtn, Math.Abs(selectedSize - 17.5) < 0.5, activeBg, inactiveBg, activeFg, inactiveFg);
+            SetPillStyle(FontXLargeBtn, Math.Abs(selectedSize - 19.5) < 0.5, activeBg, inactiveBg, activeFg, inactiveFg);
+
+            if (PreviewMessageText != null)
+                PreviewMessageText.FontSize = selectedSize;
+        }
+
+        private void UpdateScalePills(double selectedScale)
+        {
+            var activeBg = (Windows.UI.Xaml.Media.Brush)Application.Current.Resources["ZaloBlueBrush"];
+            var inactiveBg = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(0xFF, 0xF1, 0xF5, 0xF9));
+            var activeFg = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.White);
+            var inactiveFg = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(0xFF, 0x1E, 0x29, 0x3B));
+
+            SetPillStyle(Scale100Btn, Math.Abs(selectedScale - 1.0) < 0.05, activeBg, inactiveBg, activeFg, inactiveFg);
+            SetPillStyle(Scale110Btn, Math.Abs(selectedScale - 1.1) < 0.05, activeBg, inactiveBg, activeFg, inactiveFg);
+            SetPillStyle(Scale120Btn, Math.Abs(selectedScale - 1.2) < 0.05, activeBg, inactiveBg, activeFg, inactiveFg);
+            SetPillStyle(Scale130Btn, Math.Abs(selectedScale - 1.3) < 0.05, activeBg, inactiveBg, activeFg, inactiveFg);
+        }
+
+        private void SetPillStyle(Button btn, bool isSelected, Windows.UI.Xaml.Media.Brush activeBg, Windows.UI.Xaml.Media.Brush inactiveBg, Windows.UI.Xaml.Media.Brush activeFg, Windows.UI.Xaml.Media.Brush inactiveFg)
+        {
+            if (btn == null) return;
+            btn.Background = isSelected ? activeBg : inactiveBg;
+            btn.Foreground = isSelected ? activeFg : inactiveFg;
+            btn.FontWeight = isSelected ? Windows.UI.Text.FontWeights.SemiBold : Windows.UI.Text.FontWeights.Normal;
+        }
+
+        private void FontSizePill_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.Tag is string tagStr && double.TryParse(tagStr, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double size))
+            {
+                _settings.MessageFontSize = size;
+                UpdateFontSizePills(size);
+            }
+        }
+
+        private void ScalePill_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.Tag is string tagStr && double.TryParse(tagStr, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double scale))
+            {
+                _settings.UiScaleFactor = scale;
+                UpdateScalePills(scale);
+            }
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)

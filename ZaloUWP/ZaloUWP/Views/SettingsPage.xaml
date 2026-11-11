@@ -98,6 +98,57 @@
                 </StackPanel>
                 </Border>
 
+                <!-- Screen Compatibility & Sizing -->
+                <Border Background="White" CornerRadius="12" Padding="14,12" Margin="0,0,0,12">
+                <StackPanel>
+                    <TextBlock Text="TƯƠNG THÍCH MÀN HÌNH &amp; KÍCH THƯỚC" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource ZaloBlueBrush}" Margin="0,0,0,8" />
+
+                    <TextBlock Text="Kích thước chữ tin nhắn:" FontSize="13.5" FontWeight="SemiBold" Foreground="#1E293B" />
+                    <TextBlock Text="Điều chỉnh độ lớn văn bản trong bong bóng chat" FontSize="11.5" Foreground="#64748B" Margin="0,2,0,8" />
+
+                    <!-- Font Size Selector Pills -->
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="FontSmallBtn" Grid.Column="0" Content="Nhỏ" Click="FontSizePill_Click" Tag="13.5" Margin="0,0,3,0" HorizontalAlignment="Stretch" Style="{StaticResource ZaloRoundedActionButtonStyle}" />
+                        <Button x:Name="FontMediumBtn" Grid.Column="1" Content="Vừa" Click="FontSizePill_Click" Tag="15.5" Margin="3,0,3,0" HorizontalAlignment="Stretch" Style="{StaticResource ZaloRoundedActionButtonStyle}" />
+                        <Button x:Name="FontLargeBtn" Grid.Column="2" Content="Lớn" Click="FontSizePill_Click" Tag="17.5" Margin="3,0,3,0" HorizontalAlignment="Stretch" Style="{StaticResource ZaloRoundedActionButtonStyle}" />
+                        <Button x:Name="FontXLargeBtn" Grid.Column="3" Content="Rất lớn" Click="FontSizePill_Click" Tag="19.5" Margin="3,0,0,0" HorizontalAlignment="Stretch" Style="{StaticResource ZaloRoundedActionButtonStyle}" />
+                    </Grid>
+
+                    <!-- Preview Bubble -->
+                    <Border x:Name="PreviewBubbleBorder" Background="#E5F3FF" BorderBrush="#C7E2FE" BorderThickness="1" CornerRadius="14" Padding="14,10" HorizontalAlignment="Right" Margin="0,0,0,12" MaxWidth="300">
+                        <StackPanel>
+                            <TextBlock x:Name="PreviewMessageText" Text="Đây là kích thước tin nhắn hiển thị mẫu." FontSize="15.5" Foreground="#1E293B" TextWrapping="Wrap" />
+                            <TextBlock Text="10:30  ✓✓ Đã xem" FontSize="11" Foreground="{StaticResource ZaloBlueBrush}" HorizontalAlignment="Right" Margin="0,4,0,0" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Height="1" Background="#EEF2F6" Margin="0,0,0,12" />
+
+                    <!-- UI Scale Selector Pills -->
+                    <TextBlock Text="Tỷ lệ phóng đại giao diện:" FontSize="13.5" FontWeight="SemiBold" Foreground="#1E293B" />
+                    <TextBlock Text="Tối ưu độ tương thích cho màn hình Lumia 450x800, 720p hoặc 1080p" FontSize="11.5" Foreground="#64748B" Margin="0,2,0,8" />
+
+                    <Grid Margin="0,0,0,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="Scale100Btn" Grid.Column="0" Content="100%" Click="ScalePill_Click" Tag="1.0" Margin="0,0,3,0" HorizontalAlignment="Stretch" Style="{StaticResource ZaloRoundedActionButtonStyle}" />
+                        <Button x:Name="Scale110Btn" Grid.Column="1" Content="110%" Click="ScalePill_Click" Tag="1.1" Margin="3,0,3,0" HorizontalAlignment="Stretch" Style="{StaticResource ZaloRoundedActionButtonStyle}" />
+                        <Button x:Name="Scale120Btn" Grid.Column="2" Content="120%" Click="ScalePill_Click" Tag="1.2" Margin="3,0,3,0" HorizontalAlignment="Stretch" Style="{StaticResource ZaloRoundedActionButtonStyle}" />
+                        <Button x:Name="Scale130Btn" Grid.Column="3" Content="130%" Click="ScalePill_Click" Tag="1.3" Margin="3,0,0,0" HorizontalAlignment="Stretch" Style="{StaticResource ZaloRoundedActionButtonStyle}" />
+                    </Grid>
+                </StackPanel>
+                </Border>
+
                 <Border Background="White" CornerRadius="12" Padding="14,12" Margin="0,0,0,12">
                 <StackPanel>
                     <TextBlock Text="QUYỀN RIÊNG TƯ TÀI KHOẢN" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource ZaloBlueBrush}" Margin="0,0,0,8" />

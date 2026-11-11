@@ -367,7 +367,7 @@
                                     </Button>
                                     <Image Source="{x:Bind EmoticonImage, Mode=OneWay}" Width="52" Height="52" Stretch="Uniform"
                                            Visibility="{x:Bind EmoticonVisibility, Mode=OneWay}" Margin="2,2" />
-                                    <TextBlock Text="{x:Bind Text, Mode=OneWay}" FontSize="15" Foreground="#17212B" TextWrapping="Wrap"
+                                    <TextBlock Text="{x:Bind Text, Mode=OneWay}" FontSize="{x:Bind MessageFontSize, Mode=OneWay}" Foreground="#17212B" TextWrapping="Wrap"
                                                Visibility="{x:Bind HasText, Converter={StaticResource BoolToVis}, Mode=OneWay}" />
                                     <StackPanel Visibility="{x:Bind PhonePreviewVisibility, Mode=OneWay}" Margin="0,7,0,2">
                                         <Border Width="300" Background="White" BorderBrush="#D7E0EA" BorderThickness="1" CornerRadius="13">

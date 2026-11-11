@@ -200,6 +200,7 @@ namespace ZaloLite
                 Raise("DeliveryVisibility");
             }
         }
+        public double MessageFontSize => ZaloSettingsService.Current.MessageFontSize;
         public string DeliveryAvatarUrl
         {
             get { return _deliveryAvatarUrl ?? string.Empty; }
