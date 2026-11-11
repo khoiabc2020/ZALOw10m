@@ -409,8 +409,8 @@ namespace ZaloLite
             else if (cmd == 510 && sub == 1) Emit(parsed, "msgs", false, true);
             else if (cmd == 511 && sub == 1) Emit(parsed, "groupMsgs", true, true);
             else if (cmd == 602 && sub == 0) EmitTyping(parsed);
-            else if (version == 1 && cmd == 502 && sub == 0) EmitReceipts(parsed, false);
-            else if (version == 1 && cmd == 522 && sub == 0) EmitReceipts(parsed, true);
+            else if (cmd == 502) EmitReceipts(parsed, false);
+            else if (cmd == 522) EmitReceipts(parsed, true);
             else if (version == 1 && cmd == 612 && sub == 0) EmitReactions(parsed);
             else if (version == 1 && cmd == 3000 && sub == 0)
             {

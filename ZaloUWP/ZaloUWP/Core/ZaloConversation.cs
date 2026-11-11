@@ -27,11 +27,10 @@ using ZaloUWP.Services;
 
 namespace ZaloLite
 {
-    public sealed class ZaloFriend
+    public sealed class ZaloFriend : ZaloObservable
     {
         private Brush _color;
         private Brush _image;
-        private bool _imageMade;
 
         // These must be properties (not fields) so the lists on screen can show them.
         public string UserId { get; set; }
@@ -39,6 +38,7 @@ namespace ZaloLite
         public string Name { get; set; }
         public string OriginalName { get; set; }
         public string Alias { get; set; }
+        public string DisplayName { get { return !string.IsNullOrWhiteSpace(Alias) ? Alias : (!string.IsNullOrWhiteSpace(Name) ? Name : (OriginalName ?? string.Empty)); } }
         public string Avatar { get; set; }
         public string Subtitle { get; set; }
         public bool IsOnline { get; set; }
@@ -63,12 +63,16 @@ namespace ZaloLite
         {
             get
             {
-                if (!_imageMade)
+                if (_image == null && !string.IsNullOrEmpty(Avatar))
                 {
                     _image = ZaloAvatar.ImageFor(Avatar);
-                    _imageMade = true;
                 }
                 return _image;
+            }
+            set
+            {
+                _image = value;
+                Raise("AvatarImageBrush");
             }
         }
     }

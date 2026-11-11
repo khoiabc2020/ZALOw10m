@@ -20,12 +20,13 @@ namespace ZaloLite
         };
 
         private static readonly Dictionary<string, BitmapImage> _bitmapCache = new Dictionary<string, BitmapImage>(StringComparer.OrdinalIgnoreCase);
-        private static readonly Dictionary<string, Brush> _brushCache = new Dictionary<string, Brush>(StringComparer.OrdinalIgnoreCase);
         private static readonly HashSet<string> _downloadingSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         private static readonly HashSet<string> _diskCachedSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         private static readonly object _cacheLock = new object();
         private static bool _diskIndexLoaded = false;
         private static bool _diskIndexLoading = false;
+
+        public static event Action<string> AvatarUpdated;
 
         static ZaloAvatar()
         {
@@ -114,6 +115,8 @@ namespace ZaloLite
                 onDisk = _diskCachedSet.Contains(fileName);
             }
 
+            // onDisk is verified via _diskCachedSet which is initialized from local avatars folder
+
             BitmapImage bmp = null;
             try
             {
@@ -148,7 +151,7 @@ namespace ZaloLite
         {
             lock (_cacheLock)
             {
-                if (_downloadingSet.Contains(url)) return;
+                if (_downloadingSet.Contains(url) || _diskCachedSet.Contains(fileName)) return;
                 _downloadingSet.Add(url);
             }
 
@@ -177,6 +180,24 @@ namespace ZaloLite
                     {
                         _diskCachedSet.Add(fileName);
                     }
+
+                    if (Windows.ApplicationModel.Core.CoreApplication.MainView?.CoreWindow?.Dispatcher != null)
+                    {
+                        var _ = Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                            Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+                        {
+                            try
+                            {
+                                var newBmp = new BitmapImage(new Uri("ms-appdata:///local/avatars/" + fileName)) { DecodePixelWidth = 96 };
+                                lock (_cacheLock)
+                                {
+                                    _bitmapCache[url] = newBmp;
+                                }
+                                AvatarUpdated?.Invoke(url);
+                            }
+                            catch { }
+                        });
+                    }
                 }
             }
             catch { }
@@ -189,30 +210,15 @@ namespace ZaloLite
             }
         }
 
-        /// <summary>The picture as a brush, or null when there is no usable address.</summary>
+        /// <summary>The picture as a fresh brush, or null when there is no usable address. Returns a new ImageBrush to prevent WinRT sharing exceptions.</summary>
         public static Brush ImageFor(string url, int decodeWidth = 96)
         {
             if (string.IsNullOrEmpty(url)) return null;
 
-            lock (_cacheLock)
-            {
-                Brush cached;
-                if (_brushCache.TryGetValue(url, out cached))
-                {
-                    return cached;
-                }
-            }
-
             var bmp = BitmapFor(url, decodeWidth);
             if (bmp != null)
             {
-                var brush = new ImageBrush { ImageSource = bmp, Stretch = Stretch.UniformToFill };
-                lock (_cacheLock)
-                {
-                    if (_brushCache.Count > 500) _brushCache.Clear();
-                    _brushCache[url] = brush;
-                }
-                return brush;
+                return new ImageBrush { ImageSource = bmp, Stretch = Stretch.UniformToFill };
             }
             return null;
         }

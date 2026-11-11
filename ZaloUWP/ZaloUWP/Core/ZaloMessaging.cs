@@ -1187,9 +1187,30 @@ namespace ZaloLite
                 new KeyValuePair<string, string>("params", ZaloCrypto.Encode(s.SecretKey, payload.Stringify()))
             };
             IJsonValue data = await ZaloAuth.CallAsync(s, HttpMethod.Post, url, form, ct);
+            string serverMsgId = string.Empty;
+            if (data != null)
+            {
+                if (data.ValueType == JsonValueType.Object)
+                {
+                    var obj = data.GetObject();
+                    serverMsgId = ZaloAuth.Str(obj, "msgId");
+                    if (string.IsNullOrEmpty(serverMsgId)) serverMsgId = ZaloAuth.Str(obj, "messageId");
+                    if (string.IsNullOrEmpty(serverMsgId)) serverMsgId = ZaloAuth.Str(obj, "globalMsgId");
+                    if (string.IsNullOrEmpty(serverMsgId)) serverMsgId = ZaloAuth.Str(obj, "gMsgId");
+                    if (string.IsNullOrEmpty(serverMsgId)) serverMsgId = ZaloAuth.Str(obj, "id");
+                }
+                else if (data.ValueType == JsonValueType.String)
+                {
+                    serverMsgId = data.GetString();
+                }
+                else if (data.ValueType == JsonValueType.Number)
+                {
+                    serverMsgId = data.GetNumber().ToString("F0");
+                }
+            }
             return new ZaloSentText
             {
-                MessageId = data.ValueType == JsonValueType.Object ? ZaloAuth.Str(data.GetObject(), "msgId") : string.Empty,
+                MessageId = serverMsgId,
                 ClientMessageId = clientId.ToString()
             };
         }

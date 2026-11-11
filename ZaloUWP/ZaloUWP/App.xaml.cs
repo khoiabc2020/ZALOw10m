@@ -56,6 +56,8 @@ namespace ZaloUWP
                 try
                 {
                     ApiInfo.ConfigureMobileStatusBar(Windows.UI.Color.FromArgb(255, 0, 104, 255), Windows.UI.Colors.White);
+                    var appView = Windows.UI.ViewManagement.ApplicationView.GetForCurrentView();
+                    appView.SetDesiredBoundsMode(Windows.UI.ViewManagement.ApplicationViewBoundsMode.UseVisible);
                 }
                 catch { }
 
