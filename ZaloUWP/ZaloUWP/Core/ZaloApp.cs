@@ -87,6 +87,87 @@ namespace ZaloLite
                 && Friends.Any(friend => string.Equals(friend.UserId, userId, StringComparison.Ordinal));
         }
 
+        public static bool GroupContainsMember(JsonObject groupInfo, string userId)
+        {
+            if (string.IsNullOrEmpty(userId) || groupInfo == null) return false;
+            string target = userId.Trim();
+
+            // 1. memVerList (array of "uid_ver" or "uid")
+            IJsonValue memVer;
+            if (groupInfo.TryGetValue("memVerList", out memVer) && memVer.ValueType == JsonValueType.Array)
+            {
+                foreach (var item in memVer.GetArray())
+                {
+                    string s = item.ValueType == JsonValueType.String ? item.GetString() : item.ValueType == JsonValueType.Number ? item.GetNumber().ToString("F0") : null;
+                    if (string.IsNullOrEmpty(s)) continue;
+                    string uid = s.Contains("_") ? s.Split('_')[0] : s;
+                    if (uid.Equals(target, StringComparison.OrdinalIgnoreCase)) return true;
+                }
+            }
+
+            // 2. memList
+            IJsonValue memList;
+            if (groupInfo.TryGetValue("memList", out memList) && memList.ValueType == JsonValueType.Array)
+            {
+                foreach (var item in memList.GetArray())
+                {
+                    string s = item.ValueType == JsonValueType.String ? item.GetString() : item.ValueType == JsonValueType.Number ? item.GetNumber().ToString("F0") : null;
+                    if (string.IsNullOrEmpty(s)) continue;
+                    string uid = s.Contains("_") ? s.Split('_')[0] : s;
+                    if (uid.Equals(target, StringComparison.OrdinalIgnoreCase)) return true;
+                }
+            }
+
+            // 3. currentMems
+            IJsonValue curMems;
+            if (groupInfo.TryGetValue("currentMems", out curMems) && curMems.ValueType == JsonValueType.Array)
+            {
+                foreach (var item in curMems.GetArray())
+                {
+                    if (item.ValueType == JsonValueType.Object)
+                    {
+                        var o = item.GetObject();
+                        string id = ZaloAuth.Str(o, "id");
+                        if (string.IsNullOrEmpty(id)) id = ZaloAuth.Str(o, "uid");
+                        if (string.IsNullOrEmpty(id)) id = ZaloAuth.Str(o, "userId");
+                        if (!string.IsNullOrEmpty(id) && id.Equals(target, StringComparison.OrdinalIgnoreCase)) return true;
+                    }
+                    else if (item.ValueType == JsonValueType.String)
+                    {
+                        string s = item.GetString();
+                        string uid = s.Contains("_") ? s.Split('_')[0] : s;
+                        if (uid.Equals(target, StringComparison.OrdinalIgnoreCase)) return true;
+                    }
+                }
+            }
+
+            // 4. memberIds
+            IJsonValue memberIds;
+            if (groupInfo.TryGetValue("memberIds", out memberIds) && memberIds.ValueType == JsonValueType.Array)
+            {
+                foreach (var item in memberIds.GetArray())
+                {
+                    string s = item.ValueType == JsonValueType.String ? item.GetString() : item.ValueType == JsonValueType.Number ? item.GetNumber().ToString("F0") : null;
+                    if (!string.IsNullOrEmpty(s) && s.Equals(target, StringComparison.OrdinalIgnoreCase)) return true;
+                }
+            }
+
+            // 5. creatorId & adminIds
+            string creator = ZaloAuth.Str(groupInfo, "creatorId");
+            if (!string.IsNullOrEmpty(creator) && creator.Equals(target, StringComparison.OrdinalIgnoreCase)) return true;
+            IJsonValue admins;
+            if (groupInfo.TryGetValue("adminIds", out admins) && admins.ValueType == JsonValueType.Array)
+            {
+                foreach (var item in admins.GetArray())
+                {
+                    string s = item.ValueType == JsonValueType.String ? item.GetString() : null;
+                    if (!string.IsNullOrEmpty(s) && s.Equals(target, StringComparison.OrdinalIgnoreCase)) return true;
+                }
+            }
+
+            return false;
+        }
+
         public static void UpdateConversationPreviewFromMessage(ZaloConversation conversation, ZaloChatMessage message)
         {
             if (conversation == null || message == null) return;
@@ -1885,9 +1966,7 @@ namespace ZaloLite
         private static void EnsureCanSendMessage(ZaloConversation conversation)
         {
             if (conversation == null || !conversation.IsGroup) return;
-            if (!conversation.GroupSettingsLoaded)
-                throw new InvalidOperationException("Chưa xác minh được quyền gửi tin nhắn của nhóm. Hãy mở lại nhóm và thử lại.");
-            if (conversation.GroupPostingRestricted)
+            if (conversation.GroupSettingsLoaded && conversation.GroupPostingRestricted)
                 throw new InvalidOperationException("Chỉ trưởng và phó nhóm được gửi tin nhắn trong nhóm.");
         }
 

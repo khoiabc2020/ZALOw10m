@@ -331,7 +331,7 @@ namespace ZaloUWP.Views
                 foreach (KeyValuePair<string, JsonObject> pair in details)
                 {
                     JsonObject info = pair.Value;
-                    bool isMember = HasMember(info, _conversation.ThreadId);
+                    bool isMember = ZaloApp.GroupContainsMember(info, _conversation.ThreadId);
                     if (!isMember) continue;
                     string name = ZaloAuth.Str(info, "name");
                     if (name.Length == 0) name = "Nhóm " + pair.Key;

@@ -184,38 +184,35 @@ namespace ZaloUWP.Views
             MutualGroupsStatus.Text = "\u0110ang t\u00ecm nh\u00f3m chung...";
             try
             {
-                var groups = ZaloApp.Groups == null ? new System.Collections.Generic.List<ZaloConversation>()
-                    : ZaloApp.Groups.Where(g => g != null && !string.IsNullOrWhiteSpace(g.ThreadId)).Take(60).ToList();
-                if (groups.Count == 0)
+                var ids = await ZaloMessaging.GetGroupIdsAsync(ZaloApp.Session, System.Threading.CancellationToken.None);
+                if (ids == null || ids.Count == 0)
                 {
-                    MutualGroupsStatus.Text = "Ch\u01b0a c\u00f3 d\u1eef li\u1ec7u nh\u00f3m trong phi\u00ean n\u00e0y.";
+                    MutualGroupsStatus.Text = "Bạn chưa tham gia nhóm nào.";
                     MutualGroupsList.Visibility = Visibility.Visible;
                     MutualGroupsList.ItemsSource = null;
                     return;
                 }
                 var infoMap = await ZaloMessaging.GetGroupInfoMapAsync(ZaloApp.Session,
-                    groups.Select(g => g.ThreadId).ToList(), System.Threading.CancellationToken.None);
+                    ids, System.Threading.CancellationToken.None);
                 var names = new System.Collections.Generic.List<string>();
-                foreach (var group in groups)
+                foreach (var id in ids)
                 {
                     Windows.Data.Json.JsonObject info = null;
-                    if (infoMap == null || !infoMap.TryGetValue(group.ThreadId, out info) || info == null) continue;
-                    Windows.Data.Json.IJsonValue memberValue;
-                    if (!info.TryGetValue("currentMems", out memberValue) || memberValue.ValueType != JsonValueType.Array) continue;
-                    bool found = false;
-                    foreach (Windows.Data.Json.IJsonValue item in memberValue.GetArray())
+                    if (infoMap == null || !infoMap.TryGetValue(id, out info) || info == null) continue;
+                    if (ZaloApp.GroupContainsMember(info, _friend.UserId))
                     {
-                        if (item.ValueType == JsonValueType.Object && ZaloAuth.Str(item.GetObject(), "id") == _friend.UserId) { found = true; break; }
+                        string gName = ZaloAuth.Str(info, "name");
+                        if (string.IsNullOrWhiteSpace(gName)) gName = "Nhóm " + id;
+                        names.Add(gName);
                     }
-                    if (found) names.Add(string.IsNullOrWhiteSpace(group.Name) ? ZaloAuth.Str(info, "name") : group.Name);
                 }
                 MutualGroupsList.ItemsSource = names;
                 MutualGroupsList.Visibility = Visibility.Visible;
-                MutualGroupsStatus.Text = names.Count == 0 ? "Kh\u00f4ng t\u00ecm th\u1ea5y nh\u00f3m chung trong c\u00e1c nh\u00f3m \u0111\u00e3 t\u1ea3i." : names.Count + " nh\u00f3m chung";
+                MutualGroupsStatus.Text = names.Count == 0 ? "Không tìm thấy nhóm chung." : names.Count + " nhóm chung";
             }
             catch (Exception ex)
             {
-                MutualGroupsStatus.Text = "Kh\u00f4ng t\u1ea3i \u0111\u01b0\u1ee3c nh\u00f3m chung. Ch\u1ea1m \u0111\u1ec3 th\u1eed l\u1ea1i.";
+                MutualGroupsStatus.Text = "Không tải được nhóm chung. Chạm để thử lại.";
                 ZaloLog.Add("Mutual groups load failed: " + ex.Message);
             }
         }

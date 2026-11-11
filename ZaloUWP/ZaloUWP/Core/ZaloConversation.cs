@@ -42,6 +42,7 @@ namespace ZaloLite
         public string Avatar { get; set; }
         public string Subtitle { get; set; }
         public bool IsOnline { get; set; }
+        public long LastActionTime { get; set; }
         public Visibility OnlineDotVisibility { get { return IsOnline ? Visibility.Visible : Visibility.Collapsed; } }
         public Visibility SubtitleVisibility { get { return string.IsNullOrWhiteSpace(Subtitle) ? Visibility.Collapsed : Visibility.Visible; } }
         public string SectionHeader { get; set; }

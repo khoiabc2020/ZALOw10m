@@ -866,7 +866,16 @@ namespace ZaloLite
                     JsonObject o = item.GetObject();
                     string name = Str(o, "displayName");
                     if (name.Length == 0) name = Str(o, "zaloName");
-                    friends.Add(new ZaloFriend { UserId = Str(o, "userId"), Name = name, OriginalName = name, Avatar = Str(o, "avatar") });
+                    string lastAction = Str(o, "lastActionTime");
+                    if (string.IsNullOrEmpty(lastAction)) lastAction = Str(o, "last_action_time");
+                    if (string.IsNullOrEmpty(lastAction)) lastAction = Str(o, "actionTime");
+                    long lat = 0;
+                    if (long.TryParse(lastAction, out long latVal) && latVal > 0)
+                    {
+                        if (latVal < 100000000000L) latVal *= 1000;
+                        lat = latVal;
+                    }
+                    friends.Add(new ZaloFriend { UserId = Str(o, "userId"), Name = name, OriginalName = name, Avatar = Str(o, "avatar"), LastActionTime = lat });
                 }
             }
             try
