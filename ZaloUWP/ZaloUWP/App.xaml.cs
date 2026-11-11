@@ -71,7 +71,7 @@ namespace ZaloUWP
                 }
 
                 Window.Current.Activate();
-                Services.ZaloSettingsService.ApplyUiScale();
+                Services.ZaloSettingsService.ResetUiScale();
             }
             catch (Exception)
             {

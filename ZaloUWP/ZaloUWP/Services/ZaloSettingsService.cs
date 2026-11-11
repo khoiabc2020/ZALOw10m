@@ -55,45 +55,23 @@ namespace ZaloUWP.Services
 
         public double UiScaleFactor
         {
-            get
-            {
-                if (_settings.ContainsKey("UiScaleFactor"))
-                {
-                    try { return Convert.ToDouble(_settings["UiScaleFactor"]); }
-                    catch { }
-                }
-                return 1.0;
-            }
+            get => 1.0;
             set
             {
-                _settings["UiScaleFactor"] = value;
-                ApplyUiScale();
+                try { _settings.Remove("UiScaleFactor"); } catch { }
+                ResetUiScale();
             }
         }
 
-        public static void ApplyUiScale()
+        public static void ResetUiScale()
         {
             try
             {
-                double factor = Current.UiScaleFactor;
                 if (Window.Current?.Content is FrameworkElement root)
                 {
-                    if (Math.Abs(factor - 1.0) < 0.01)
-                    {
-                        root.RenderTransform = null;
-                        root.Width = double.NaN;
-                        root.Height = double.NaN;
-                    }
-                    else
-                    {
-                        var bounds = Window.Current.Bounds;
-                        if (bounds.Width > 0 && bounds.Height > 0)
-                        {
-                            root.Width = bounds.Width / factor;
-                            root.Height = bounds.Height / factor;
-                            root.RenderTransform = new ScaleTransform { ScaleX = factor, ScaleY = factor };
-                        }
-                    }
+                    root.RenderTransform = null;
+                    root.Width = double.NaN;
+                    root.Height = double.NaN;
                 }
             }
             catch { }
