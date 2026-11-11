@@ -113,3 +113,4 @@ with zipfile.ZipFile(apk_path, 'r') as z:
                 print(f"Error {out_name}{suffix}: {e}")
 
 print("DONE rendering all icons with alpha=True!")
+

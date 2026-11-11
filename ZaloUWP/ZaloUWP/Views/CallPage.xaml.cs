@@ -24,7 +24,7 @@ namespace ZaloUWP.Views
                 CalleeNameTextBlock.Text = friend.Name ?? "Bạn bè Zalo";
                 if (!string.IsNullOrEmpty(friend.Avatar))
                 {
-                    try { CalleeAvatarBrush.ImageSource = new BitmapImage(new Uri(friend.Avatar)); } catch { }
+                    try { CalleeAvatarBrush.ImageSource = ZaloAvatar.BitmapFor(friend.Avatar); } catch { }
                 }
             }
             else if (e.Parameter is ZaloConversation convLite)
@@ -32,7 +32,7 @@ namespace ZaloUWP.Views
                 CalleeNameTextBlock.Text = convLite.Name ?? "Trò chuyện";
                 if (!string.IsNullOrEmpty(convLite.AvatarUrl))
                 {
-                    try { CalleeAvatarBrush.ImageSource = new BitmapImage(new Uri(convLite.AvatarUrl)); } catch { }
+                    try { CalleeAvatarBrush.ImageSource = ZaloAvatar.BitmapFor(convLite.AvatarUrl); } catch { }
                 }
             }
             else if (e.Parameter is ConversationItem conv)
@@ -41,7 +41,7 @@ namespace ZaloUWP.Views
                 var avatarUrl = !string.IsNullOrEmpty(conv.DisplayAvatar) ? conv.DisplayAvatar : "ms-appx:///Assets/Square150x150Logo.png";
                 try
                 {
-                    CalleeAvatarBrush.ImageSource = new BitmapImage(new Uri(avatarUrl));
+                    CalleeAvatarBrush.ImageSource = ZaloAvatar.BitmapFor(avatarUrl);
                 }
                 catch { }
             }

@@ -47,3 +47,4 @@ def sync_csproj_assets(project_dir, csproj_name):
 
 sync_csproj_assets(r"D:\zalo\ZaloWP81", "ZaloWP81.csproj")
 sync_csproj_assets(r"D:\zalo\ZaloUWP\ZaloUWP", "ZaloUWP.csproj")
+
