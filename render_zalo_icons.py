@@ -50,6 +50,14 @@ targets = {
     "ic_check_circle_clean": ("zds_ic_check_circle_solid_24.xml", 24, 24),
     "ic_close_clean": ("zds_ic_close_line_24.xml", 24, 24),
     "ic_close_circle_clean": ("zds_ic_close_circle_solid_24.xml", 24, 24),
+    # Navigation & General Controls
+    "ic_back_clean": ("zds_ic_arrow_left_line_24.xml", 24, 24),
+    "ic_chevron_right_clean": ("zds_ic_chevron_right_line_24.xml", 24, 24),
+    "ic_camera_clean": ("zds_ic_camera_line_24.xml", 24, 24),
+    "ic_download_clean": ("zds_ic_download_line_24.xml", 24, 24),
+    "ic_share_clean": ("zds_ic_share_line_24.xml", 24, 24),
+    "ic_refresh_clean": ("zds_ic_retry_line_24.xml", 24, 24),
+    "ic_info_clean": ("zds_ic_info_circle_line_24.xml", 24, 24),
 }
 
 with zipfile.ZipFile(apk_path, 'r') as z:
