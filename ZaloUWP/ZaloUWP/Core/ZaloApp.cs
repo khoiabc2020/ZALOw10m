@@ -851,9 +851,25 @@ namespace ZaloLite
                     {
                         if (value.ValueType != JsonValueType.Object) continue;
                         JsonObject receipt = value.GetObject();
-                        string threadId = isGroup ? ZaloAuth.Str(receipt, "groupId") : FirstStringValue(receipt, "deliveredUids");
-                        if (threadId.Length == 0) threadId = ZaloAuth.Str(receipt, "idTo");
-                        if (threadId.Length == 0) continue;
+                        string threadId = isGroup ? ZaloAuth.Str(receipt, "groupId") : string.Empty;
+                        if (!isGroup)
+                        {
+                            string uidFrom = ZaloAuth.Str(receipt, "uidFrom");
+                            if (string.IsNullOrEmpty(uidFrom)) uidFrom = FirstStringValue(receipt, "deliveredUids");
+                            if (string.IsNullOrEmpty(uidFrom)) uidFrom = FirstStringValue(receipt, "seenUids");
+                            if (string.IsNullOrEmpty(uidFrom)) uidFrom = ZaloAuth.Str(receipt, "userId");
+
+                            string idTo = ZaloAuth.Str(receipt, "idTo");
+                            if (string.IsNullOrEmpty(idTo)) idTo = ZaloAuth.Str(receipt, "toid");
+
+                            if (!string.IsNullOrEmpty(uidFrom) && (Session == null || uidFrom != Session.Uid))
+                                threadId = uidFrom;
+                            else if (!string.IsNullOrEmpty(idTo) && (Session == null || idTo != Session.Uid))
+                                threadId = idTo;
+                            else
+                                threadId = !string.IsNullOrEmpty(uidFrom) ? uidFrom : idTo;
+                        }
+                        if (string.IsNullOrEmpty(threadId) || threadId == "0") continue;
                         ZaloConversation conversation = Find((isGroup ? "g:" : "u:") + threadId);
                         if (conversation == null) continue;
 
@@ -880,8 +896,24 @@ namespace ZaloLite
                     {
                         if (value.ValueType != JsonValueType.Object) continue;
                         JsonObject receipt = value.GetObject();
-                        string threadId = isGroup ? ZaloAuth.Str(receipt, "groupId") : ZaloAuth.Str(receipt, "idTo");
-                        if (threadId.Length == 0) continue;
+                        string threadId = isGroup ? ZaloAuth.Str(receipt, "groupId") : string.Empty;
+                        if (!isGroup)
+                        {
+                            string uidFrom = ZaloAuth.Str(receipt, "uidFrom");
+                            if (string.IsNullOrEmpty(uidFrom)) uidFrom = FirstStringValue(receipt, "seenUids");
+                            if (string.IsNullOrEmpty(uidFrom)) uidFrom = ZaloAuth.Str(receipt, "userId");
+
+                            string idTo = ZaloAuth.Str(receipt, "idTo");
+                            if (string.IsNullOrEmpty(idTo)) idTo = ZaloAuth.Str(receipt, "toid");
+
+                            if (!string.IsNullOrEmpty(uidFrom) && (Session == null || uidFrom != Session.Uid))
+                                threadId = uidFrom;
+                            else if (!string.IsNullOrEmpty(idTo) && (Session == null || idTo != Session.Uid))
+                                threadId = idTo;
+                            else
+                                threadId = !string.IsNullOrEmpty(uidFrom) ? uidFrom : idTo;
+                        }
+                        if (string.IsNullOrEmpty(threadId) || threadId == "0") continue;
                         ZaloConversation conversation = Find((isGroup ? "g:" : "u:") + threadId);
                         if (conversation == null) continue;
                         string avatarUid = isGroup
@@ -958,17 +990,60 @@ namespace ZaloLite
         }
         private static bool ApplyReceiptToMessage(ZaloConversation conversation, JsonObject receipt, int state, string avatarUrl)
         {
+            if (conversation == null) return false;
             string messageId = ZaloAuth.Str(receipt, "msgId");
             string realMessageId = ZaloAuth.Str(receipt, "realMsgId");
-            if (messageId.Length == 0 && realMessageId.Length == 0) return false;
-            ZaloChatMessage message = conversation.Messages.FirstOrDefault(item => item.FromMe
-                && ((!string.IsNullOrEmpty(messageId) && (item.GlobalMessageId == messageId || item.Id == messageId))
-                    || (!string.IsNullOrEmpty(realMessageId) && (item.GlobalMessageId == realMessageId || item.Id == realMessageId))));
-            if (message == null) return false;
-            int previousState = message.ReceiptState;
-            string previousAvatar = message.DeliveryAvatarUrl;
-            message.SetDeliveryReceipt(state, avatarUrl);
-            return previousState != message.ReceiptState || previousAvatar != message.DeliveryAvatarUrl;
+            string dMsgId = ZaloAuth.Str(receipt, "dMsgId");
+            string cliMsgId = ZaloAuth.Str(receipt, "cliMsgId");
+
+            List<string> targetIds = new List<string>();
+            if (!string.IsNullOrEmpty(messageId)) targetIds.Add(messageId);
+            if (!string.IsNullOrEmpty(realMessageId)) targetIds.Add(realMessageId);
+            if (!string.IsNullOrEmpty(dMsgId)) targetIds.Add(dMsgId);
+            if (!string.IsNullOrEmpty(cliMsgId)) targetIds.Add(cliMsgId);
+
+            if (receipt != null && receipt.ContainsKey("msgIds"))
+            {
+                var arr = ArrayValue(receipt, "msgIds");
+                if (arr != null)
+                {
+                    foreach (var item in arr)
+                    {
+                        string idStr = item.ValueType == JsonValueType.String ? item.GetString() : item.ValueType == JsonValueType.Number ? item.GetNumber().ToString("F0") : null;
+                        if (!string.IsNullOrEmpty(idStr)) targetIds.Add(idStr);
+                    }
+                }
+            }
+
+            bool anyChanged = false;
+            if (targetIds.Count > 0)
+            {
+                foreach (var msg in conversation.Messages.Where(item => item.FromMe))
+                {
+                    if (targetIds.Contains(msg.Id) || targetIds.Contains(msg.GlobalMessageId) || targetIds.Contains(msg.ClientMessageId))
+                    {
+                        int prev = msg.ReceiptState;
+                        string prevAva = msg.DeliveryAvatarUrl;
+                        msg.SetDeliveryReceipt(state, avatarUrl);
+                        if (prev != msg.ReceiptState || prevAva != msg.DeliveryAvatarUrl) anyChanged = true;
+                    }
+                }
+            }
+
+            // Fallback: If no specific ID matched, or if it was a conversation-wide seen/delivered event
+            if (!anyChanged)
+            {
+                var lastOutgoing = conversation.Messages.LastOrDefault(m => m.FromMe);
+                if (lastOutgoing != null)
+                {
+                    int prev = lastOutgoing.ReceiptState;
+                    string prevAva = lastOutgoing.DeliveryAvatarUrl;
+                    lastOutgoing.SetDeliveryReceipt(state, avatarUrl);
+                    if (prev != lastOutgoing.ReceiptState || prevAva != lastOutgoing.DeliveryAvatarUrl) anyChanged = true;
+                }
+            }
+
+            return anyChanged;
         }
 
         private static string AvatarForUser(string userId)
@@ -1475,15 +1550,33 @@ namespace ZaloLite
 
                 if (message.FromMe && m.FromMe)
                 {
-                    bool isPending = !string.IsNullOrEmpty(m.Id) && m.Id.StartsWith("pending_");
-                    if (isPending)
+                    if (!string.IsNullOrEmpty(message.ClientMessageId) && !string.IsNullOrEmpty(m.ClientMessageId) && m.ClientMessageId == message.ClientMessageId)
                     {
-                        if ((!string.IsNullOrEmpty(message.ClientMessageId) && m.ClientMessageId == message.ClientMessageId)
-                            || (m.Text == message.Text && Math.Abs(m.Ts - message.Ts) < 45000))
-                        {
-                            match = m;
-                            break;
-                        }
+                        match = m;
+                        break;
+                    }
+                    if (!string.IsNullOrEmpty(m.Text) && m.Text == message.Text && Math.Abs(m.Ts - message.Ts) < 60000)
+                    {
+                        match = m;
+                        break;
+                    }
+                    if (!string.IsNullOrEmpty(m.MediaUrl) && m.MediaUrl == message.MediaUrl && Math.Abs(m.Ts - message.Ts) < 60000)
+                    {
+                        match = m;
+                        break;
+                    }
+                }
+                else if (!message.FromMe && !m.FromMe && m.SenderUid == message.SenderUid)
+                {
+                    if (!string.IsNullOrEmpty(message.ClientMessageId) && !string.IsNullOrEmpty(m.ClientMessageId) && m.ClientMessageId == message.ClientMessageId)
+                    {
+                        match = m;
+                        break;
+                    }
+                    if (!string.IsNullOrEmpty(m.Text) && m.Text == message.Text && Math.Abs(m.Ts - message.Ts) < 15000)
+                    {
+                        match = m;
+                        break;
                     }
                 }
             }

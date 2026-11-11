@@ -28,8 +28,7 @@ namespace ZaloUWP.Services
             {
                 var settings = new MediaCaptureInitializationSettings
                 {
-                    StreamingCaptureMode = StreamingCaptureMode.Audio,
-                    MediaCategory = MediaCategory.Communications
+                    StreamingCaptureMode = StreamingCaptureMode.Audio
                 };
 
                 _mediaCapture = new MediaCapture();
