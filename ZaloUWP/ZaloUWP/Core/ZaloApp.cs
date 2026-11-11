@@ -1426,30 +1426,91 @@ namespace ZaloLite
                     ? message.Sender + ": " + message.Text : message.Text;
         }
 
+        private static void EnrichExistingMessage(ZaloChatMessage existing, ZaloChatMessage message)
+        {
+            if (message.HasLinkPreview && !existing.HasLinkPreview)
+                existing.SetLinkPreview(message.LinkPreviewTitle, message.LinkPreviewDescription,
+                    message.LinkPreviewUrl, message.LinkPreviewImageUrl);
+            if (message.HasContactCard && !existing.HasContactCard)
+                existing.SetContactCard(message.ContactUid, message.ContactName, message.ContactAvatarUrl,
+                    message.ContactQrUrl, message.ContactPhone);
+            if (existing.Text == "[Danh thiếp]" && message.Text != "[Danh thiếp]")
+                existing.Text = message.Text;
+            if (string.IsNullOrEmpty(existing.MediaUrl) && !string.IsNullOrEmpty(message.MediaUrl))
+                existing.MediaUrl = message.MediaUrl;
+            if (string.IsNullOrEmpty(existing.MediaFullUrl) && !string.IsNullOrEmpty(message.MediaFullUrl))
+                existing.MediaFullUrl = message.MediaFullUrl;
+            if (string.IsNullOrEmpty(existing.FileName) && !string.IsNullOrEmpty(message.FileName))
+                existing.FileName = message.FileName;
+            if (string.IsNullOrEmpty(existing.StickerId) && !string.IsNullOrEmpty(message.StickerId))
+                existing.StickerId = message.StickerId;
+        }
+
         private static void AddMessage(ZaloConversation conversation, ZaloChatMessage message, bool countUnread)
         {
-            if (!string.IsNullOrEmpty(message.Id) && !conversation.SeenIds.Add(message.Id))
+            if (conversation == null || message == null) return;
+
+            if (!string.IsNullOrEmpty(message.Id) && conversation.SeenIds.Contains(message.Id))
             {
-                // History may enrich a lightweight message restored from disk. Preserve the
-                // existing row/scroll position while replacing old generic contact placeholders
-                // with the link/contact payload now available from the server.
                 ZaloChatMessage existing = conversation.Messages.FirstOrDefault(item => item.Id == message.Id);
                 if (existing != null)
                 {
-                    if (message.HasLinkPreview && !existing.HasLinkPreview)
-                        existing.SetLinkPreview(message.LinkPreviewTitle, message.LinkPreviewDescription,
-                            message.LinkPreviewUrl, message.LinkPreviewImageUrl);
-                    if (message.HasContactCard && !existing.HasContactCard)
-                        existing.SetContactCard(message.ContactUid, message.ContactName, message.ContactAvatarUrl,
-                            message.ContactQrUrl, message.ContactPhone);
-                    if (existing.Text == "[Danh thiếp]" && message.Text != "[Danh thiếp]")
-                        existing.Text = message.Text;
+                    EnrichExistingMessage(existing, message);
                 }
                 if (string.IsNullOrWhiteSpace(conversation.LastText) || conversation.LastTs <= 0 || message.Ts >= conversation.LastTs)
                 {
                     UpdateConversationPreviewFromMessage(conversation, message);
                 }
                 return;
+            }
+
+            // Match pending or already-existing message by ID, GlobalId, ClientId, or pending match
+            ZaloChatMessage match = null;
+            for (int i = conversation.Messages.Count - 1; i >= 0; i--)
+            {
+                var m = conversation.Messages[i];
+                if (!string.IsNullOrEmpty(message.Id) && m.Id == message.Id) { match = m; break; }
+                if (!string.IsNullOrEmpty(message.GlobalMessageId) && m.GlobalMessageId == message.GlobalMessageId) { match = m; break; }
+                if (!string.IsNullOrEmpty(message.ClientMessageId) && m.ClientMessageId == message.ClientMessageId) { match = m; break; }
+
+                if (message.FromMe && m.FromMe)
+                {
+                    bool isPending = !string.IsNullOrEmpty(m.Id) && m.Id.StartsWith("pending_");
+                    if (isPending)
+                    {
+                        if ((!string.IsNullOrEmpty(message.ClientMessageId) && m.ClientMessageId == message.ClientMessageId)
+                            || (m.Text == message.Text && Math.Abs(m.Ts - message.Ts) < 45000))
+                        {
+                            match = m;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (match != null)
+            {
+                if (!string.IsNullOrEmpty(match.Id) && match.Id.StartsWith("pending_"))
+                {
+                    conversation.SeenIds.Remove(match.Id);
+                }
+                match.Id = message.Id;
+                match.GlobalMessageId = message.GlobalMessageId;
+                match.ClientMessageId = message.ClientMessageId;
+                if (message.Ts > 0) match.Ts = message.Ts;
+                EnrichExistingMessage(match, message);
+                if (!string.IsNullOrEmpty(message.Id)) conversation.SeenIds.Add(message.Id);
+                if (message.Ts >= conversation.LastTs || string.IsNullOrWhiteSpace(conversation.LastText))
+                {
+                    UpdateConversationPreviewFromMessage(conversation, match);
+                }
+                ScheduleBatchWork();
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(message.Id))
+            {
+                conversation.SeenIds.Add(message.Id);
             }
 
             int index = conversation.Messages.Count;
@@ -1679,7 +1740,12 @@ namespace ZaloLite
             try
             {
                 ZaloMessaging.ZaloSentText sent = await ZaloMessaging.SendTextAsync(
-                    Session, conversation.ThreadId, conversation.IsGroup, text, quote, CancellationToken.None);
+                    Session, conversation.ThreadId, conversation.IsGroup, text, quote, CancellationToken.None, localTs);
+                conversation.SeenIds.Remove(localId);
+                if (!string.IsNullOrEmpty(sent.MessageId))
+                {
+                    conversation.SeenIds.Add(sent.MessageId);
+                }
                 outgoing.Id = sent.MessageId;
                 outgoing.GlobalMessageId = sent.MessageId;
                 outgoing.ClientMessageId = sent.ClientMessageId;

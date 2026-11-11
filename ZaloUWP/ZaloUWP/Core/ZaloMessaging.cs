@@ -1145,10 +1145,10 @@ namespace ZaloLite
 
         /// <summary>Sends a plain text message, optionally quoting a supported text or media message.</summary>
         public static async Task<ZaloSentText> SendTextAsync(ZaloSession s, string threadId, bool isGroup,
-            string text, ZaloChatMessage quote, CancellationToken ct)
+            string text, ZaloChatMessage quote, CancellationToken ct, long clientId = 0)
         {
             if (s == null) throw new InvalidOperationException("Vui lòng đăng nhập trước.");
-            long clientId = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            if (clientId <= 0) clientId = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             var payload = new JsonObject();
             payload["message"] = JsonValue.CreateStringValue(text);
             payload["clientId"] = JsonValue.CreateNumberValue(clientId);
