@@ -3,7 +3,9 @@ import os
 import sys
 
 root_dir = os.path.dirname(os.path.abspath(__file__))
-build_script = os.path.join(root_dir, "build_wp81.py")
+build_script = os.path.join(root_dir, "ZaloWP81", "build.py")
+if not os.path.exists(build_script):
+    build_script = os.path.join(root_dir, "build_wp81.py")
 
 if __name__ == "__main__":
     if os.path.exists(build_script):
