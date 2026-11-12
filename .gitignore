@@ -18,6 +18,7 @@ temp_repack_*/
 *.appxupload
 *.msix
 *.msixbundle
+*.zip
 
 # External references and scratch projects
 UnigramMobileUWP/
